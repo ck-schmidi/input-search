@@ -16,8 +16,8 @@ defmodule InputsearchWeb.Router do
 
   scope "/", InputsearchWeb do
     pipe_through :browser
-
-    get "/", PageController, :index
+    live "/", Live.DemoLive
+    # get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
