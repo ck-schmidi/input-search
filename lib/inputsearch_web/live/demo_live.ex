@@ -36,11 +36,11 @@ defmodule InputsearchWeb.Live.DemoLive do
 
   defp test_data do
     [
-      %{id: 0, name: "Linz Parzhofstraße"},
-      %{id: 1, name: "Linz Hofgasse"},
-      %{id: 2, name: "Linz Graben"},
-      %{id: 4, name: "Wien Wurzbachgasse"},
-      %{id: 5, name: "Wien Prater"}
+      %{name: "Linz Parzhofstraße"},
+      %{name: "Linz Hofgasse"},
+      %{name: "Linz Graben"},
+      %{name: "Wien Wurzbachgasse"},
+      %{name: "Wien Prater"}
     ]
   end
 end
