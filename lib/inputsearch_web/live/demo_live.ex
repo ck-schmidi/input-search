@@ -7,7 +7,6 @@ defmodule InputsearchWeb.Live.DemoLive do
       |> assign(:search_text, "")
       |> assign(:entries, [])
       |> assign(:selected_entry, nil)
-      |> assign(:show_suggestions, false)
 
     {:ok, socket}
   end
@@ -18,10 +17,10 @@ defmodule InputsearchWeb.Live.DemoLive do
     <p>Start typing:</p>
 
     <!--Make sure the form has the autocomplete function switched off:-->
-    <form autocomplete="off" phx-change="change">
+    <form autocomplete="off" phx-change="change" phx-submit="submit">
       <div class="autocomplete" style="width:300px;">
-        <input id="myInput" type="text" name="search_text" placeholder="Country" value="<%= @search_text %>">
-        <%= if @show_suggestions do %>
+        <input type="text" name="search_text" placeholder="Departure" value="<%= @search_text %>">
+        <%= if !@selected_entry do %>
           <div id="autocomplete-list" class="autocomplete-items">
             <%= for entry <- @entries do %>
               <div phx-click="entry_selected" phx-value-id="<%= entry.id %>"><%= entry.name %></div>
@@ -29,9 +28,20 @@ defmodule InputsearchWeb.Live.DemoLive do
           </div>
         <% end %>
       </div>
+      <%= if @selected_entry do %>
+        <input type="hidden" name="selected_id" value="<%= @selected_entry.id %>">
+      <% end %>
       <input type="submit">
     </form>
+
+    <code>
+      <%= @selected_entry |> inspect() %>
+    </code
     """
+  end
+
+  defp filter_entries_by_query(_, "") do
+    []
   end
 
   defp filter_entries_by_query(data, query) do
@@ -58,9 +68,9 @@ defmodule InputsearchWeb.Live.DemoLive do
 
     socket =
       socket
+      |> assign(:selected_entry, nil)
       |> assign(:search_text, search_text)
       |> assign(:entries, entries)
-      |> set_show_suggestions
       |> IO.inspect()
 
     {:noreply, socket}
@@ -74,12 +84,21 @@ defmodule InputsearchWeb.Live.DemoLive do
       socket
       |> assign(:selected_entry, entry)
       |> assign(:search_text, entry.name)
-      |> assign(:show_suggestions, false)
 
     {:noreply, socket}
   end
 
-  defp set_show_suggestions(socket) do
-    assign(socket, :show_suggestions, socket.assigns.search_text != "")
+  def handle_event("submit", %{"selected_id" => selected_id}, socket) do
+    idx = String.to_integer(selected_id)
+
+    get_entry_by_id(socket.assigns.entries, idx)
+    |> IO.inspect()
+
+    {:noreply, socket}
+  end
+
+  def handle_event("submit", _, socket) do
+    IO.puts("no entry selected")
+    {:noreply, socket}
   end
 end
