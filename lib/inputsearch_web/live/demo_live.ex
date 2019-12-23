@@ -43,6 +43,11 @@ defmodule InputsearchWeb.Live.DemoLive do
     {:noreply, socket}
   end
 
+  def handle_event("submit", _, socket) do
+    socket.assigns.selected_entry |> inspect() |> IO.puts()
+    {:noreply, socket}
+  end
+
   defp filter_entries_by_query(_, "") do
     []
   end
