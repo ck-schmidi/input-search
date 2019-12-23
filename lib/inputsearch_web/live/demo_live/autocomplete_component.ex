@@ -1,13 +1,14 @@
 defmodule InputsearchWeb.Live.DemoLive.AutocompleteComponent do
   use Phoenix.LiveComponent
 
+  @spec render(any) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     ~L"""
     <div class="autocomplete">
       <input type="text" name="search_text" placeholder="Departure" value="<%= @search_text %>">
       <%= if !@selected_entry do %>
         <div id="autocomplete-list" class="autocomplete-items">
-          <%= for entry <- @filtered_entries do %>
+          <%= for entry <- @entries do %>
             <div phx-click="entry_selected" phx-value-uuid="<%= entry.uuid %>"><%= entry.name %></div>
           <% end %>
         </div>
@@ -25,7 +26,6 @@ defmodule InputsearchWeb.Live.DemoLive.AutocompleteComponent do
       socket
       |> assign(:entries, entries)
       |> assign(:selected_entry, assigns.selected_entry)
-      |> assign(:filtered_entries, [])
       |> assign(:search_text, search_text(assigns.selected_entry))
 
     {:ok, socket}
@@ -52,16 +52,7 @@ defmodule InputsearchWeb.Live.DemoLive.AutocompleteComponent do
   end
 
   def handle_event("change", %{"search_text" => search_text}, socket) do
-    entries = socket.assigns.entries |> filter_entries_by_query(search_text)
-
-    socket =
-      socket
-      |> assign(:selected_entry, nil)
-      |> assign(:search_text, search_text)
-      |> assign(:filtered_entries, entries)
-
-    send(self(), {:updated_selected_entry, nil})
-
+    send(self(), {:updated_search_text, search_text})
     {:noreply, socket}
   end
 
@@ -74,16 +65,6 @@ defmodule InputsearchWeb.Live.DemoLive.AutocompleteComponent do
       |> assign(:search_text, entry.name)
 
     send(self(), {:updated_selected_entry, entry |> remove_uuid})
-
     {:noreply, socket}
-  end
-
-  defp filter_entries_by_query(_, "") do
-    []
-  end
-
-  defp filter_entries_by_query(data, query) do
-    data
-    |> Enum.filter(&(&1.name |> String.downcase() |> String.contains?(String.downcase(query))))
   end
 end
