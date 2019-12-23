@@ -24,6 +24,7 @@ defmodule InputsearchWeb.Live.DemoLive.AutocompleteComponent do
 
     socket =
       socket
+      |> assign(:id, assigns.id)
       |> assign(:entries, entries)
       |> assign(:selected_entry, assigns.selected_entry)
       |> assign(:search_text, search_text(assigns.selected_entry))
@@ -52,7 +53,7 @@ defmodule InputsearchWeb.Live.DemoLive.AutocompleteComponent do
   end
 
   def handle_event("change", %{"search_text" => search_text}, socket) do
-    send(self(), {:updated_search_text, search_text})
+    send(self(), {:updated_search_text, socket.assigns.id, search_text})
     {:noreply, socket}
   end
 
@@ -64,7 +65,7 @@ defmodule InputsearchWeb.Live.DemoLive.AutocompleteComponent do
       |> assign(:selected_entry, entry)
       |> assign(:search_text, entry.name)
 
-    send(self(), {:updated_selected_entry, entry |> remove_uuid})
+    send(self(), {:updated_selected_entry, socket.assigns.id, entry |> remove_uuid})
     {:noreply, socket}
   end
 end

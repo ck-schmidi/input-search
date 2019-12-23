@@ -30,11 +30,11 @@ defmodule InputsearchWeb.Live.DemoLive do
     """
   end
 
-  def handle_info({:updated_selected_entry, selected_entry}, socket) do
+  def handle_info({:updated_selected_entry, "street", selected_entry}, socket) do
     {:noreply, assign(socket, :selected_entry, selected_entry)}
   end
 
-  def handle_info({:updated_search_text, search_text}, socket) do
+  def handle_info({:updated_search_text, "street", search_text}, socket) do
     socket =
       socket
       |> assign(:selected_entry, nil)
